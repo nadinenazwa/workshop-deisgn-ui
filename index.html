@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konfirmasi Pendaftaran</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="glass-card">
+        <div id="formSection">
+            <h2>Buat Akun Baru</h2>
+            <form id="registrationForm">
+                <div class="input-group">
+                    <input type="text" id="nama" placeholder="Nama Lengkap" required>
+                </div>
+                <div class="input-group">
+                    <input type="email" id="email" placeholder="Email" required>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="username" placeholder="Username" required>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="password" placeholder="Password" required>
+                </div>
+                <button type="submit" id="regBtn">Daftar Sekarang</button>
+            </form>
+        </div>
+
+        <div id="displayArea" class="hidden">
+            <h2>Konfirmasi Pendaftaran</h2>
+            <div id="resultContent"></div>
+            <button onclick="location.reload()" class="btn-back">Kembali</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

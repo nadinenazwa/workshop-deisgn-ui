@@ -1,0 +1,57 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(15px);
+    border-radius: 25px;
+    padding: 40px;
+    width: 380px;
+    box-shadow: 0 10px 30px rgba(255, 182, 193, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    color: #6d5b6b; /* Warna teks gelap lembut */
+    text-align: center;
+}
+
+.input-group { margin-bottom: 15px; }
+
+input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.5);
+    color: #4a4a4a;
+    box-sizing: border-box;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    background: #ff85a2; /* Soft Pink Button */
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 10px;
+}
+
+button:hover { background: #ff5c8d; }
+
+.btn-back {
+    background: rgba(255, 255, 255, 0.3);
+    color: #ff5c8d;
+    border: 1px solid #ff85a2;
+}
+
+.hidden { display: none; }
