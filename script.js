@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 document.addEventListener('DOMContentLoaded', () => {
     const regForm = document.getElementById('registrationForm');
     const formSection = document.getElementById('formSection');
@@ -25,3 +26,32 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     });
 });
+=======
+// Fungsi untuk smooth scrolling saat menu diklik
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+    });
+});
+
+// Animasi sederhana saat scroll
+window.addEventListener('scroll', function() {
+    const navbar = document.querySelector('.navbar');
+    if (window.scrollY > 50) {
+        navbar.classList.add('shadow-sm');
+        navbar.style.transition = '0.3s';
+    } else {
+        navbar.classList.remove('shadow-sm');
+    }
+});
+
+// Pesan selamat datang (Opsional, bisa dihapus jika tidak perlu)
+console.log("MOM-SECURE Landing Page loaded successfully!");
+>>>>>>> 13f8f0e (Modul 5 Workshop design ui)

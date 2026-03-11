@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 body {
     margin: 0;
     padding: 0;
@@ -55,3 +56,58 @@ button:hover { background: #ff5c8d; }
 }
 
 .hidden { display: none; }
+=======
+/* Font Configuration  */
+body {
+    font-family: 'Ubuntu', sans-serif;
+    color: #4a4a4a;
+}
+
+h1, h2, h3, .navbar-brand {
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* Custom Colors */
+.bg-soft-pink {
+    background-color: #fce4ec !important; /* Soft Pink */
+}
+
+.pink-icon {
+    color: #f06292;
+}
+
+.hero-section {
+    background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+    color: #880e4f;
+}
+
+/* Button Customization [cite: 38, 40] */
+.btn-pink {
+    background-color: #f06292;
+    color: white;
+    border-radius: 25px;
+    transition: transform 0.3s;
+}
+
+.btn-pink:hover {
+    background-color: #ec407a;
+    color: white;
+    transform: scale(1.05); /* [cite: 40] */
+}
+
+.btn-outline-pink {
+    border: 2px solid #f06292;
+    color: #f06292;
+    border-radius: 25px;
+}
+
+.btn-outline-pink:hover {
+    background-color: #f06292;
+    color: white;
+}
+
+/* Section Smooth Spacing */
+section {
+    padding: 80px 0;
+}
+>>>>>>> 13f8f0e (Modul 5 Workshop design ui)
