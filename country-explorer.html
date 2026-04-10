@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Country Explorer</title>
+
+  <style>
+    /* Reset & font dasar */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      color: #1a202c;
+      min-height: 100vh;
+    }
+
+    /* ---- Header ---- */
+    header {
+      background: #ffd1dc;
+      color: white;
+      padding: 28px 24px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    header p {
+      font-size: 0.95rem;
+      opacity: 0.85;
+    }
+
+    /* ---- Search bar ---- */
+    .search-wrapper {
+      max-width: 480px;
+      margin: 28px auto 0;
+      position: relative;
+    }
+
+    .search-wrapper input {
+      width: 100%;
+      padding: 12px 16px 12px 44px;
+      border-radius: 999px;
+      border: none;
+      font-size: 1rem;
+      outline: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .search-wrapper .icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.1rem;
+      opacity: 0.5;
+    }
+
+    /* ---- Main container ---- */
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 16px;
+    }
+
+    /* ---- Info baris jumlah negara ---- */
+    .info-bar {
+      font-size: 0.9rem;
+      color: #718096;
+      margin-bottom: 20px;
+    }
+
+    /* ---- Grid kartu negara ---- */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    /* ---- Satu kartu negara ---- */
+    .card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+
+    /* Efek hover — kartu naik sedikit */
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+
+    /* Gambar bendera */
+    .card img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      display: block;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    /* Isi kartu */
+    .card-body {
+      padding: 14px 16px 18px;
+    }
+
+    .card-body h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #2d3748;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-body p {
+      font-size: 0.82rem;
+      color: #718096;
+      margin-bottom: 4px;
+    }
+
+    .card-body p span {
+      color: #2d3748;
+      font-weight: 600;
+    }
+
+    /* Badge region */
+    .badge {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: #ebf8ff;
+      color: #2b6cb0;
+    }
+
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 0;
+      color: #718096;
+    }
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid #e2e8f0;
+      border-top-color: #2b6cb0;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 16px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ---- Pesan error ---- */
+    .error {
+      text-align: center;
+      padding: 60px 0;
+      color: #e53e3e;
+    }
+
+    .error button {
+      margin-top: 16px;
+      padding: 10px 24px;
+      background: #2b6cb0;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 60px 0;
+      color: #a0aec0;
+      font-size: 1.1rem;
+    }
+
+    /* ---- Modal detail negara ---- */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 1200;
+    }
+
+    .modal-overlay.show { display: flex; }
+
+    .modal {
+      background: white;
+      border-radius: 12px;
+      max-width: 900px;
+      width: 100%;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+      overflow: hidden;
+      max-height: 90vh;
+      display: flex;
+      gap: 0;
+    }
+
+    .modal-left {
+      flex: 0 0 320px;
+      background: linear-gradient(180deg, #fff 0%, #fff 100%);
+    }
+
+    .modal-left img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .modal-right {
+      padding: 18px 20px;
+      overflow: auto;
+      flex: 1 1 auto;
+    }
+
+    .modal-right h3 {
+      margin-bottom: 6px;
+      font-size: 1.2rem;
+    }
+
+    .modal-meta {
+      font-size: 0.9rem;
+      color: #4a5568;
+      margin-bottom: 10px;
+    }
+
+    .modal-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px 18px;
+    }
+
+    .modal-row { font-size: 0.9rem; color: #2d3748; }
+
+    .modal-close {
+      position: absolute;
+      right: 20px;
+      top: 18px;
+      background: transparent;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: #2d3748;
+    }
+
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.5rem; }
+      .grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    }
+
+    @media (max-width: 400px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🌍 Country Explorer</h1>
+    <p>Jelajahi informasi negara di seluruh dunia</p>
+    <!-- Search bar -->
+    <div class="search-wrapper">
+      <span class="icon">🔍</span>
+      <input
+        type="text"
+        id="search"
+        placeholder="Cari nama negara..."
+        oninput="filterCountries(this.value)"
+      />
+    </div>
+        <p>Nadine Nazwa Andina / 434241035</p>
+  </header>
+
+  <main>
+    <p class="info-bar" id="info-bar">Memuat data...</p>
+    <div id="content"></div>
+  </main>
+
+  <script>
+
+    let allCountries = [];
+
+    // -------------------------------------------------------
+    // FUNGSI 1: fetchCountries()
+    // Tugas: Memanggil API dan mengambil data JSON
+    // -------------------------------------------------------
+    async function fetchCountries() {
+      // Tampilkan loading dulu sebelum data datang
+      showLoading();
+
+      try {
+        // fetch() = perintah untuk mengambil data dari internet
+        // await = tunggu sampai data datang baru lanjut ke baris berikutnya
+        const response = await fetch(
+          'https://restcountries.com/v3.1/all?fields=name,flags,capital,population,region,subregion'
+        );
+
+        // Cek apakah request berhasil (status 200)
+        if (!response.ok) {
+          throw new Error('Gagal mengambil data dari API');
+        }
+
+        // Ubah response menjadi array JavaScript (parsing JSON)
+        const data = await response.json();
+
+        // Urutkan negara berdasarkan nama A-Z
+        allCountries = data.sort((a, b) =>
+          a.name.common.localeCompare(b.name.common)
+        );
+
+        // Tampilkan semua negara
+        renderCards(allCountries);
+
+      } catch (error) {
+        // Jika ada error (misal: tidak ada internet), tampilkan pesan error
+        showError(error.message);
+      }
+    }
+
+    // -------------------------------------------------------
+    // FUNGSI 2: renderCards(countries)
+    // Tugas: Membuat kartu HTML dari data array negara
+    // -------------------------------------------------------
+    function renderCards(countries) {
+      const content = document.getElementById('content');
+      const infoBar = document.getElementById('info-bar');
+
+      // Update info bar
+      infoBar.textContent = `Menampilkan ${countries.length} negara`;
+
+      // Jika tidak ada hasil pencarian
+      if (countries.length === 0) {
+        content.innerHTML = `<div class="empty">😕 Negara tidak ditemukan</div>`;
+        return;
+      }
+
+      content.innerHTML = `
+        <div class="grid">
+          ${countries.map(country => createCardHTML(country)).join('')}
+        </div>
+      `;
+    }
+
+    // -------------------------------------------------------
+    // FUNGSI 3: createCardHTML(country)
+    // Tugas: Membuat HTML string untuk satu kartu negara
+    // -------------------------------------------------------
+    function createCardHTML(country) {
+      // Ambil data dari objek JSON (pakai || untuk nilai default jika kosong)
+      const name       = country.name.common;
+      const flag       = country.flags?.png || country.flags?.svg || '';
+      const capital    = country.capital?.[0] || 'Tidak diketahui';
+      const population = formatNumber(country.population);
+      const region     = country.region || '-';
+
+      return `
+        <div class="card" title="${name}" onclick="showCountryDetails('${encodeURIComponent(name)}')">
+          <img src="${flag}" alt="Bendera ${name}" loading="lazy" />
+          <div class="card-body">
+            <h2>${name}</h2>
+            <p>🏛️ Ibu kota: <span>${capital}</span></p>
+            <p>👥 Populasi: <span>${population}</span></p>
+            <span class="badge">${region}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    (function insertModalOnce(){
+      if (document.getElementById('modal-overlay')) return;
+      const modalHtml = `
+        <div id="modal-overlay" class="modal-overlay" aria-hidden="true">
+          <div class="modal" role="dialog" aria-modal="true">
+            <div class="modal-left">
+              <img id="modal-flag" src="" alt="" />
+            </div>
+            <div class="modal-right">
+              <button class="modal-close" aria-label="Tutup" onclick="closeModal()">✕</button>
+              <h3 id="modal-name">Nama Negara</h3>
+              <div class="modal-meta" id="modal-sub">Subregion • Region</div>
+              <div id="modal-body">
+                <div class="modal-grid" id="modal-grid">
+                  <!-- populated dynamically -->
+                </div>
+                <div style="margin-top:12px; font-size:0.9rem; color:#2d3748;">
+                  <a id="modal-map-link" href="#" target="_blank">Lihat di peta</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+      // close on overlay click
+      document.getElementById('modal-overlay').addEventListener('click', function(e){
+        if (e.target === this) closeModal();
+      });
+
+      // close on ESC
+      document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeModal(); });
+    })();
+
+    function openModal() {
+      const overlay = document.getElementById('modal-overlay');
+      overlay.classList.add('show');
+      overlay.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeModal() {
+      const overlay = document.getElementById('modal-overlay');
+      overlay.classList.remove('show');
+      overlay.setAttribute('aria-hidden', 'true');
+    }
+
+    async function showCountryDetails(encodedName) {
+      const name = decodeURIComponent(encodedName);
+      // tampilkan modal dengan loading
+      openModal();
+      const flagEl = document.getElementById('modal-flag');
+      const nameEl = document.getElementById('modal-name');
+      const subEl  = document.getElementById('modal-sub');
+      const gridEl = document.getElementById('modal-grid');
+      const mapLink = document.getElementById('modal-map-link');
+
+      // set temporary loading state
+      flagEl.src = '';
+      flagEl.alt = '';
+      nameEl.textContent = `Memuat ${name}...`;
+      subEl.textContent = '';
+      gridEl.innerHTML = `<div style="padding:30px; text-align:center; color:#718096;">Memuat detail...</div>`;
+      mapLink.href = '#';
+
+      try {
+        const res = await fetch(`https://restcountries.com/v3.1/name/${encodeURIComponent(name)}?fullText=true&fields=name,flags,capital,population,region,subregion,languages,currencies,timezones,borders,area,maps,cca2,cca3`);
+        if (!res.ok) throw new Error('Gagal mengambil detail negara');
+        const d = await res.json();
+        const country = d[0];
+        renderCountryModal(country);
+      } catch (err) {
+        gridEl.innerHTML = `<div style="padding:18px; color:#e53e3e;">Gagal memuat detail: ${err.message}</div>`;
+      }
+    }
+
+    function renderCountryModal(country) {
+      const flagEl = document.getElementById('modal-flag');
+      const nameEl = document.getElementById('modal-name');
+      const subEl  = document.getElementById('modal-sub');
+      const gridEl = document.getElementById('modal-grid');
+      const mapLink = document.getElementById('modal-map-link');
+
+      const name = country.name.common || '-';
+      const native = country.name.nativeName ? Object.values(country.name.nativeName)[0].common : '';
+      const capital = country.capital?.[0] || '-';
+      const population = formatNumber(country.population);
+      const region = country.region || '-';
+      const subregion = country.subregion || '-';
+      const area = country.area ? `${country.area.toLocaleString('id-ID')} km²` : '-';
+      const languages = country.languages ? Object.values(country.languages).join(', ') : '-';
+      const currencies = country.currencies ? Object.values(country.currencies).map(c => c.name + (c.symbol ? ` (${c.symbol})` : '')).join(', ') : '-';
+      const timezones = country.timezones ? country.timezones.join(', ') : '-';
+      const borders = country.borders ? country.borders.join(', ') : '-';
+      const mapsUrl = country.maps?.googleMaps || country.maps?.openStreetMaps || '#';
+
+      flagEl.src = country.flags?.png || country.flags?.svg || '';
+      flagEl.alt = `Bendera ${name}`;
+      nameEl.textContent = name + (native ? ` — ${native}` : '');
+      subEl.textContent = `${subregion} • ${region}`;
+
+      gridEl.innerHTML = `
+        <div class="modal-row"><strong>Ibu kota:</strong><div>${capital}</div></div>
+        <div class="modal-row"><strong>Populasi:</strong><div>${population}</div></div>
+        <div class="modal-row"><strong>Area:</strong><div>${area}</div></div>
+        <div class="modal-row"><strong>Bahasa:</strong><div>${languages}</div></div>
+        <div class="modal-row"><strong>Mata uang:</strong><div>${currencies}</div></div>
+        <div class="modal-row"><strong>Zona waktu:</strong><div>${timezones}</div></div>
+        <div class="modal-row"><strong>Batas negara:</strong><div>${borders}</div></div>
+      `;
+
+      mapLink.href = mapsUrl;
+      mapLink.textContent = 'Lihat di peta';
+    }
+
+    // -------------------------------------------------------
+    // FUNGSI 4: filterCountries(query)
+    // Tugas: Filter data saat user mengetik di search bar
+    // -------------------------------------------------------
+    function filterCountries(query) {
+      // toLowerCase() = ubah ke huruf kecil agar pencarian tidak case-sensitive
+      const keyword = query.toLowerCase().trim();
+
+      if (keyword === '') {
+        // Jika search kosong, tampilkan semua negara
+        renderCards(allCountries);
+        return;
+      }
+
+      // filter() = ambil hanya negara yang namanya mengandung keyword
+      const filtered = allCountries.filter(country =>
+        country.name.common.toLowerCase().includes(keyword)
+      );
+
+      renderCards(filtered);
+    }
+
+    // -------------------------------------------------------
+    // FUNGSI 5: showLoading()
+    // Tugas: Tampilkan animasi loading
+    // -------------------------------------------------------
+    function showLoading() {
+      document.getElementById('content').innerHTML = `
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Mengambil data negara...</p>
+        </div>
+      `;
+      document.getElementById('info-bar').textContent = 'Memuat data...';
+    }
+
+    // -------------------------------------------------------
+    // FUNGSI 6: showError(message)
+    // Tugas: Tampilkan pesan error jika fetch gagal
+    // -------------------------------------------------------
+    function showError(message) {
+      document.getElementById('content').innerHTML = `
+        <div class="error">
+          <p>⚠️ Terjadi kesalahan: ${message}</p>
+          <button onclick="fetchCountries()">Coba Lagi</button>
+        </div>
+      `;
+      document.getElementById('info-bar').textContent = 'Gagal memuat data';
+    }
+
+    // -------------------------------------------------------
+    // FUNGSI HELPER: formatNumber(num)
+    // Tugas: Format angka populasi agar mudah dibaca
+    // Contoh: 273000000 → "273.000.000"
+    // -------------------------------------------------------
+    function formatNumber(num) {
+      if (!num) return 'N/A';
+      return num.toLocaleString('id-ID');
+    }
+
+    // -------------------------------------------------------
+    // PANGGIL fungsi utama saat halaman selesai dimuat
+    // -------------------------------------------------------
+    fetchCountries();
+
+  </script>
+</body>
+</html>
